@@ -2,7 +2,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min; 
 }
 
-  var Croupier={
+var Croupier={
     GenerarBaraja: barajaDeCartas,
     Barajar: barajar,
     OrdenarBaraja: ordenar,
@@ -14,11 +14,10 @@ function getRandomInt(min, max) {
     GanadorBj: ganador,
     baraja: [],
     mano: [],
-    total:[],
-    totalA: []
-  }
+    total:[0],
+}
    
-  function barajaDeCartas(cantidadDeBarajas){
+function barajaDeCartas(cantidadDeBarajas){
     var pintas="CPDT"
     for(var c=1;c<=cantidadDeBarajas;c++){
         for(var i=0;i<4;i++){
@@ -27,8 +26,8 @@ function getRandomInt(min, max) {
             }
         }
     }
-  }
-  function barajar(){
+}
+function barajar(){
     var aux, a, b; 
     for(var i=0;i<=this.baraja.length*3;i++){
         a=getRandomInt(0,this.baraja.length-1);    
@@ -37,38 +36,37 @@ function getRandomInt(min, max) {
         this.baraja[a]=this.baraja[b];
         this.baraja[b]=aux;
     }
-  }
-  function ordenar(){
+}
+function ordenar(){
     var a=this.baraja.length;
     for (var i=0;i<a;i++){
         this.baraja.shift();
     }
     Croupier.GenerarBaraja(a/52);
-  }
-  function repartir(jugadores, cantidad){
+}
+function repartir(jugadores, cantidad){
     for(var n=0;n<=jugadores;n++){
         this.mano.push([]);
     }  
     for(var k=0;k<cantidad;k++){
         for(var j=0;j<=jugadores;j++){
             this.mano[j][k]=this.baraja[0];   
-            this.baraja.shift();      
+            this.baraja.shift()     
         }    
     }    
-  }
-  function pedirCarta(jugador){
+}
+function pedirCarta(jugador){
     if(this.total[jugador]<21){
-        this.mano[jugador].pop();
         this.mano[jugador].push(this.baraja[0]);
         this.baraja.shift();
     }
     Croupier.Puntuar(jugador);
-  }
-  function puntuar(jugadores){
+}
+function puntuar(jugadores){
     
     if(this.total[0]===0){
         
-        for(var j=0;j<jugadores;j++){
+        for(var j=0;j<=jugadores;j++){
             var Carta0=this.mano[j][0].Valor;
             var Carta1=this.mano[j][1].Valor;
 
@@ -78,17 +76,14 @@ function getRandomInt(min, max) {
                 this.total[j]=20;
             } else if (Carta0===1&&Carta1===1){
                 this.total[j]=12;
-                this.totalA[j]=2;
             } else if (Carta0>=10&&Carta1<10&&Carta1>1){
                 this.total[j]=10+Carta1;
             } else if (Carta0<10&&Carta0>1&&Carta1>=10){
                 this.total[j]=10+Carta0;
             } else if (Carta0===1&&Carta1<10&&Carta1>1){
                 this.total[j]=Carta1+11;
-                this.totalA[j]=Carta1+1;
             } else if (Carta0<10&&Carta0>1&&Carta1===1){
                 this.total[j]=Carta0+11;
-                this.totalA[j]=Carta0+1;
             } else if (Carta0>=10&&Carta1===1){
                 this.total[j]=21;
             } else if (Carta0===1&&Carta1>=10){
@@ -97,62 +92,40 @@ function getRandomInt(min, max) {
         } 
     } else {
         var p=jugadores;
-        var UltimaPosicion=this.mano[p].length-1;
-        var UltimaCarta=UltimaPosicion-1;
+        var UltimaCarta=this.mano[p].length-1;
 
-        if (this.mano[p][UltimaPosicion]===0){
+        if (this.total[p]<21){
             if(this.mano[p][UltimaCarta].Valor>10){
                 this.total[p]=Number(this.total[p])+10;
             } else if (this.mano[p][UltimaCarta].Valor===1){
-           
                 if(this.total[p]<=10&&this.totalA[p]===0){
                     this.total[p]=Number(this.total[p])+11;
-                    this.totalA[p]=Number(this.total[p])+1;
                 } else {
                     this.total[p]=Number(this.total[p])+1;
                 }
-           
             } else{
                 this.total[p]=Number(this.total[p])+Number(this.mano[p][UltimaCarta].Valor);
             }
         }
-
     }
-   
-    if (this.total[jugadores]>=21){
-        this.mano[jugadores].push(1);
-    } else {
-        this.mano[jugadores].push(0);
-    }
-  }
-  
-
-
-
-
-
-  function ganador(jugadores){
-   
+}
+function ganador(jugadores){
     var Texto;
    
     for(var j=1;j<=jugadores;j++){
      
-        if(this.mano[0]===this.mano[j]){
-            return j + "Empata con el Croupier";
-        } else if ((this.mano[0]>this.mano[j]&&this.mano[0]<=21)||(this.mano[0]<this.mano[j]&&this.mano[j]>21)){
-            this.mano[j][this.mano.length-1]=2;
-            return "Ganador es el Croupier";
-        } else if ((this.mano[0]<this.mano[j]&&this.mano[j]<=21)||(this.mano[0]>this.mano[j]&&this.mano[0]<21)){
-            this.mano[j][this.mano.length-1]=3;
-            return "Ganador es el Jugador" + j;
+        if(this.total[0]===this.total[j]){
+            Texto=j+" Empata con el Croupier";
+        } else if ((this.total[0]>this.total[j]&&this.total[0]<=21)||(this.total[0]<this.total[j]&&this.total[j]>21)){
+            Texto="Gana el Croupier";
+        } else if ((this.total[0]<this.total[j]&&this.total[j]<=21)||(this.total[0]>this.total[j]&&this.total[0]<21)){
+            Texto="Gana el Jugador "+j;
         }
-     
+     console.log(Texto);
     }
-   
-    alert()
-  }
-   
-  function comenzarBJ(jugadores){
+}
+
+function comenzarBJ(jugadores){
      
     Croupier.GenerarBaraja(6);
     Croupier.Barajar(Croupier.baraja);
@@ -198,9 +171,7 @@ function getRandomInt(min, max) {
     console.log(fraseC + valorC + " de " + pintaC);
    
   }
-   
-
-  function GenerarMano(mano,valorM,pinta,cartas){
+function GenerarMano(mano,valorM,pinta,cartas){
     var a,b;
          
     for(var i=0;i<cartas;i++){
@@ -212,32 +183,57 @@ function getRandomInt(min, max) {
    
    
 
-  function Programa(){
+function Programa(){
       
-      /** Generador de baraja **/
-      Croupier.GenerarBaraja(6);   
-      //console.log(Croupier.baraja);
-      /*************************/  
+    /** Generador de baraja **/
+    Croupier.GenerarBaraja(6);
+    //console.log(Croupier.baraja);
+    /*************************/  
     
-      /** Meclador de baraja  **/  
-      Croupier.Barajar();
-      //console.log(Croupier.baraja);
-      /*************************/ 
+    /** Meclador de baraja  **/  
+    Croupier.Barajar();
+    //Croupier.baraja.shift();
+    //console.log(Croupier.baraja);
+    /*************************/ 
       
-      /** Generador de baraja **/
-      Croupier.OrdenarBaraja();   
-      console.log(Croupier.baraja);
-      /*************************/
+    /** Ordenar de baraja   **/
+    //Croupier.OrdenarBaraja();   
+    //console.log(Croupier.baraja);
+    /*************************/
       
-      /** Repartir cartas **/
-      Croupier.OrdenarBaraja();   
-      console.log(Croupier.baraja);
-      /*************************/
-      
+    /** Repartir cartas     **/
+    Croupier.Repartir(1,2);   
+    //console.log(Croupier.mano);
+    //console.log(Croupier.baraja);
+    /*************************/
+    
+    /** Pedir cartas        **/
+    //Croupier.total[0]=2;
+    //Croupier.DarCarta(0);   
+    //console.log(Croupier.baraja);
+    //console.log(Croupier.mano);
+    /*************************/
+   
+    /** Puntuar mano       **/
+    Croupier.Puntuar(1);   
+    console.log(Croupier.baraja);
     console.log(Croupier.mano);
     console.log(Croupier.total);
-    console.log(Croupier.totalA);
-   
+    Croupier.DarCarta(0);
+    Croupier.DarCarta(1);
+    //console.log(Croupier.baraja);
+    //console.log(Croupier.mano);
+    //console.log(Croupier.total);
+    /*************************/
+    
+    /** Ganador          **/ 
+    console.log(Croupier.baraja);
+    console.log(Croupier.mano);
+    console.log(Croupier.total);
+    Croupier.Ganador(1);
+    /*************************/
+    
+    
 }
    
-  Programa();
+Programa();
