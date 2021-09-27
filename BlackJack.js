@@ -13,8 +13,9 @@ var Croupier={
     ComenzarBJ: comenzarBJ,
     GanadorBj: ganador,
     baraja: [],
+    jugadores: 0,
     mano: [],
-    total:[0],
+    total:[],
 }
    
 function barajaDeCartas(cantidadDeBarajas){
@@ -44,7 +45,8 @@ function ordenar(){
     }
     Croupier.GenerarBaraja(a/52);
 }
-function repartir(jugadores, cantidad){
+function repartir(cantidad){
+   	var jugadores=this.jugadores;
     for(var n=0;n<=jugadores;n++){
         this.mano.push([]);
     }  
@@ -60,71 +62,75 @@ function pedirCarta(jugador){
         this.mano[jugador].push(this.baraja[0]);
         this.baraja.shift();
     }
-    Croupier.Puntuar(jugador);
-}
-function puntuar(jugadores){
     
-    if(this.total[0]===0){
-        
-        for(var j=0;j<=jugadores;j++){
-            var Carta0=this.mano[j][0].Valor;
-            var Carta1=this.mano[j][1].Valor;
+    var p=jugador;
+    var UltimaCarta=this.mano[p].length-1;
 
-            this.total[j]=Carta0+Carta1;
-       
-            if(Carta0>=10&&Carta1>=10){
-                this.total[j]=20;
-            } else if (Carta0===1&&Carta1===1){
-                this.total[j]=12;
-            } else if (Carta0>=10&&Carta1<10&&Carta1>1){
-                this.total[j]=10+Carta1;
-            } else if (Carta0<10&&Carta0>1&&Carta1>=10){
-                this.total[j]=10+Carta0;
-            } else if (Carta0===1&&Carta1<10&&Carta1>1){
-                this.total[j]=Carta1+11;
-            } else if (Carta0<10&&Carta0>1&&Carta1===1){
-                this.total[j]=Carta0+11;
-            } else if (Carta0>=10&&Carta1===1){
-                this.total[j]=21;
-            } else if (Carta0===1&&Carta1>=10){
-                this.total[j]=21;
-            }
-        } 
-    } else {
-        var p=jugadores;
-        var UltimaCarta=this.mano[p].length-1;
-
-        if (this.total[p]<21){
-            if(this.mano[p][UltimaCarta].Valor>10){
-                this.total[p]=Number(this.total[p])+10;
-            } else if (this.mano[p][UltimaCarta].Valor===1){
-                if(this.total[p]<=10&&this.totalA[p]===0){
-                    this.total[p]=Number(this.total[p])+11;
-                } else {
-                    this.total[p]=Number(this.total[p])+1;
-                }
+    if (this.total[p]<21){
+        if(this.mano[p][UltimaCarta].Valor>10){
+            if(this.mano[p][0]===1&&this.mano[p][1]===1){
+                this.total[p]=12;
             } else{
-                this.total[p]=Number(this.total[p])+Number(this.mano[p][UltimaCarta].Valor);
+                this.total[p]=Number(this.total[p])+10;
             }
+        } else if (this.mano[p][UltimaCarta].Valor===1){
+            if(this.total[p]<=10){
+				this.total[p]=Number(this.total[p])+11;
+			} else {
+                this.total[p]=Number(this.total[p])+1;
+            }
+		} else{
+              	this.total[p]=Number(this.total[p])+Number(this.mano[p][UltimaCarta].Valor);
         }
-    }
+	}
 }
-function ganador(jugadores){
+function puntuar(){
+	var jugadores=this.jugadores;
+    
+    for(var j=0;j<=jugadores;j++){
+      	var Carta0=this.mano[j][0].Valor;
+        var Carta1=this.mano[j][1].Valor;
+
+        this.total[j]=Carta0+Carta1;
+       
+        if(Carta0>=10&&Carta1>=10){
+           	this.total[j]=20;
+        } else if (Carta0===1&&Carta1===1){
+         	this.total[j]=12;
+        } else if (Carta0>=10&&Carta1<10&&Carta1>1){
+          	this.total[j]=10+Carta1;
+        } else if (Carta0<10&&Carta0>1&&Carta1>=10){
+         	this.total[j]=10+Carta0;
+        } else if (Carta0===1&&Carta1<10&&Carta1>1){
+          	this.total[j]=Carta1+11;
+        } else if (Carta0<10&&Carta0>1&&Carta1===1){
+          	this.total[j]=Carta0+11;
+        } else if (Carta0>=10&&Carta1===1){
+           	this.total[j]=21;
+        } else if (Carta0===1&&Carta1>=10){
+          	this.total[j]=21;
+       	}
+  	} 
+}
+function ganador(){
     var Texto;
-   
+  	var jugadores=this.jugadores;
     for(var j=1;j<=jugadores;j++){
      
-        if(this.total[0]===this.total[j]){
-            Texto=j+" Empata con el Croupier";
-        } else if ((this.total[0]>this.total[j]&&this.total[0]<=21)||(this.total[0]<this.total[j]&&this.total[j]>21)){
+        var Cro=this.total[0];
+        var Jug=this.total[j];
+        
+        if ((Cro>Jug&&Cro<=21)||(Cro<Jug&&Jug>21)){
             Texto="Gana el Croupier";
-        } else if ((this.total[0]<this.total[j]&&this.total[j]<=21)||(this.total[0]>this.total[j]&&this.total[0]<21)){
+        } else if ((Jug>Cro&&Jug<=21)||(Jug<Cro&&Cro>21)){
             Texto="Gana el Jugador "+j;
+        } else {
+            Texto="El jugador "+j+" Empata con el Croupier";
         }
+        
      console.log(Texto);
     }
 }
-
 function comenzarBJ(jugadores){
      
     Croupier.GenerarBaraja(6);
@@ -171,6 +177,8 @@ function comenzarBJ(jugadores){
     console.log(fraseC + valorC + " de " + pintaC);
    
   }
+
+
 function GenerarMano(mano,valorM,pinta,cartas){
     var a,b;
          
@@ -180,11 +188,11 @@ function GenerarMano(mano,valorM,pinta,cartas){
         mano[i]=[{Valor:a,Pinta:b}];
     }
   }
-   
-   
 
 function Programa(){
       
+    Croupier.jugadores=5;
+    
     /** Generador de baraja **/
     Croupier.GenerarBaraja(6);
     //console.log(Croupier.baraja);
@@ -202,35 +210,31 @@ function Programa(){
     /*************************/
       
     /** Repartir cartas     **/
-    Croupier.Repartir(1,2);   
+    Croupier.Repartir(2);   
     //console.log(Croupier.mano);
     //console.log(Croupier.baraja);
     /*************************/
     
-    /** Pedir cartas        **/
-    //Croupier.total[0]=2;
-    //Croupier.DarCarta(0);   
-    //console.log(Croupier.baraja);
-    //console.log(Croupier.mano);
-    /*************************/
-   
     /** Puntuar mano       **/
-    Croupier.Puntuar(1);   
-    console.log(Croupier.baraja);
-    console.log(Croupier.mano);
-    console.log(Croupier.total);
-    Croupier.DarCarta(0);
-    Croupier.DarCarta(1);
+    Croupier.Puntuar();   
     //console.log(Croupier.baraja);
     //console.log(Croupier.mano);
     //console.log(Croupier.total);
     /*************************/
     
-    /** Ganador          **/ 
+    /** Pedir cartas        **/
+    //Croupier.DarCarta(0);
+    //Croupier.DarCarta(1);
+    //console.log(Croupier.baraja);
+    //console.log(Croupier.mano);
+    //console.log(Croupier.total);
+    /*************************/
+     
+    /** Ganador          **/
+    Croupier.Ganador();
     console.log(Croupier.baraja);
     console.log(Croupier.mano);
     console.log(Croupier.total);
-    Croupier.Ganador(1);
     /*************************/
     
     
