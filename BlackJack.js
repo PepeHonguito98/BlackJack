@@ -192,10 +192,8 @@ function comenzarBJ(){
             if(Croupier.total[0]<=16){
                 j=0;
             }
-        } else {
-            Croupier.Ganador();
-        }
-        
+        } 
+        Croupier.Ganador();
     }
     
     alert(this.texto[1]+"!");
