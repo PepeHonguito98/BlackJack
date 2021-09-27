@@ -12,10 +12,12 @@ var Croupier={
     Ganador: ganador,
     ComenzarBJ: comenzarBJ,
     GanadorBj: ganador,
+    Texto: texto,
     baraja: [],
     jugadores: 0,
     mano: [],
     total:[],
+    texto: []
 }
    
 function barajaDeCartas(cantidadDeBarajas){
@@ -115,34 +117,27 @@ function puntuar(){
 function ganador(){
     var Texto;
   	var jugadores=this.jugadores;
+    this.texto[1]="";
     for(var j=1;j<=jugadores;j++){
      
         var Cro=this.total[0];
         var Jug=this.total[j];
         
-        if ((Cro>Jug&&Cro<=21)||(Cro<Jug&&Jug>21)){
+        if ((Cro>Jug&&Cro<=21)||(Cro<Jug&&Jug>21&&Cro<=21)){
             Texto="Gana el Croupier";
-        } else if ((Jug>Cro&&Jug<=21)||(Jug<Cro&&Cro>21)){
+        } else if ((Jug>Cro&&Jug<=21)||(Jug<Cro&&Cro>21&&Jug<=21)){
             Texto="Gana el Jugador "+j;
         } else {
             Texto="El jugador "+j+" Empata con el Croupier";
         }
         
-     console.log(Texto);
+    	this.texto[1]=this.texto[1]+Texto+"\nPuntos: C: "+this.total[0]+" J"+j+": "+this.total[j]+"\n";
     }
 }
-function comenzarBJ(jugadores){
-     
-    Croupier.GenerarBaraja(6);
-    Croupier.Barajar(Croupier.baraja);
-    Croupier.Repartir(jugadores,2);
-   
-    var fraseC, pintaC, valorC, fraseJ;
-    fraseC = "El Croupier tiene 2 cartas; una boca abajo y la boca arriba es un";
-    valorC= " " + this.mano[0][0].Valor;
-   
-    var jug=jugadores;
-   
+function texto(jug){
+    
+    var pintaC, valorC;
+    
     if (this.mano[0][0].Pinta==="C"){
         pintaC = "Corazones";
     } else if (this.mano[0][0].Pinta==="P"){
@@ -161,22 +156,51 @@ function comenzarBJ(jugadores){
         valorC = " Rey(K)";
     } else if (this.mano[0][0].Valor===1){
         valorC = " As";
+    } else {
+        valorC = this.mano[0][0].Valor;
     }
+    
+    var manoJug="";
+    
+    for(var i=0;i<this.mano[jug].length;i++){
+        manoJug=manoJug+" "+this.mano[jug][i].Valor+this.mano[jug][i].Pinta;
+    }
+    
+    
+    this.texto[0]="El croupier tiene 2 cartas, la carta visible es un "+valorC+" de "+pintaC+"\n\n Tus cartas son: "+manoJug+"\nPuntos: "+this.total[jug]+"\n\nPedir, Plantarse o Doblar";
+    
+}
+function comenzarBJ(){
+     
+    var jug=this.jugadores;
+    
+    Croupier.GenerarBaraja(6);
+    Croupier.Barajar();
+    Croupier.Repartir(2);
+    Croupier.Puntuar();
    
     for(var j=1;j<=jug;j++){
-        var AccionJ= prompt(fraseC + valorC + " de " + pintaC + "\n\nPedir, Plantarse o Doblar" , "Plantarse");
+        
+        Croupier.Texto(jug);
+        var AccionJ= prompt(this.texto[0],"Plantarse");
+        
         if (AccionJ==="Pedir"){
             Croupier.DarCarta(j);
-        } else if(Croupier.total[0]<=16){
+            j=0;
+        } else if (Croupier.total[0]<=16){
             Croupier.DarCarta(0);
+            if(Croupier.total[0]<=16){
+                j=0;
+            }
         } else {
-            Croupier.Ganador(jugadores);
+            Croupier.Ganador();
         }
-    } 
-   
-    console.log(fraseC + valorC + " de " + pintaC);
-   
-  }
+        
+    }
+    
+    alert(this.texto[1]+"!");
+    
+}
 
 
 function GenerarMano(mano,valorM,pinta,cartas){
@@ -191,7 +215,7 @@ function GenerarMano(mano,valorM,pinta,cartas){
 
 function Programa(){
       
-    Croupier.jugadores=5;
+    Croupier.jugadores=1;
     
     /** Generador de baraja **/
     Croupier.GenerarBaraja(6);
@@ -223,8 +247,8 @@ function Programa(){
     /*************************/
     
     /** Pedir cartas        **/
-    //Croupier.DarCarta(0);
-    //Croupier.DarCarta(1);
+    Croupier.DarCarta(0);
+    Croupier.DarCarta(1);
     //console.log(Croupier.baraja);
     //console.log(Croupier.mano);
     //console.log(Croupier.total);
@@ -235,8 +259,16 @@ function Programa(){
     console.log(Croupier.baraja);
     console.log(Croupier.mano);
     console.log(Croupier.total);
+    console.log(Croupier.texto[1]);
     /*************************/
     
+    /** ComenzarBJ       **/
+    Croupier.ComenzarBJ();   
+    console.log(Croupier.baraja);
+    console.log(Croupier.mano);
+    console.log(Croupier.total);
+    //console.log(Croupier.texto[1]);
+    /*************************/
     
 }
    
